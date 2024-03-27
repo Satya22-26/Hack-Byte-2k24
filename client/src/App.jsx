@@ -1,10 +1,12 @@
 import './App.css'
-
+import Navbar from './components/Navbar'
+import Section1 from './sections/Section1'
 function App() {
 
   return (
     <>
-   <h1 className='bg-red-400'>kfbgkadsfkja</h1>
+    <Navbar/>
+    <Section1/>
     </>
   )
 }
