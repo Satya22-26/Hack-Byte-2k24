@@ -35,7 +35,7 @@ const Carousel = () => {
             <img
               src={image}
               alt={`Slide ${index}`}
-              className='carousel-image w-[99.9vw] h-[100vh]'
+              className='carousel-image w-[99.9vw] h-[85vh] md:h-[100vh]'
             />
           </div>
         ))}

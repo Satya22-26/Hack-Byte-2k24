@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import logo from '../assets/logo.png';
+import logo2 from '../assets/logo-2.png';
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -29,7 +30,7 @@ function Navbar() {
         </div>
         <div className='w-[80%] bg-black h-[100vh] flex flex-col items-center gap-24'>
           <div className='flex w-full justify-between items-center px-4 h-[15vh]'>
-            <img src={logo} alt="" className='h-[10vh]'/>
+            <img src={logo2} alt="" className='h-[10vh]'/>
             <button className='text-white' onClick={() => setMenuOpen(false)}>🗙</button>
           </div>
           <div className='flex flex-col text-white items-start gap-4'>

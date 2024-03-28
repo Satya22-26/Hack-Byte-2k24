@@ -6,16 +6,16 @@ import './Services.css'; // Import CSS file for styling
 
 function Services() {
   return (
-    <div className='services-container flex flex-col gap-16'>
+    <div className='services-container flex flex-col gap-16 mt-24 xl:h-[100vh] h-auto mb-24 xl:mb-0'>
       <div>
         <div>
-          <p className='text-2xl text-gray-700 text-center'>A Safer Community Services</p>
+          <p className='sm:text-2xl text-xl text-gray-700 text-center'>A Safer Community Services</p>
           <hr className='border-primary mt-2' />
         </div>
-        <p className='text-[45px] font-bold mt-2'>Services We’re Offering</p>
+        <p className='sm:text-[45px] text-[32px] font-bold mt-2'>Services We’re Offering</p>
       </div>
 
-      <div className='flex justify-center gap-10'>
+      <div className='flex xl:flex-row flex-col justify-center gap-10'>
         <div className='service-item' style={{ backgroundImage: `url(${service1})`}}>
         <p className='text-white text-[35px] font-bold yup'>Fire Fighting</p>
 
