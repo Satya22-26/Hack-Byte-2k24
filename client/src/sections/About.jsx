@@ -18,7 +18,7 @@ function About() {
           <p className='sm:text-2xl text-xl text-gray-700 text-center'>About our firbrigs</p>
           <hr className='border-primary mt-2' />
         </div>
-        <p className='sm:text-[40px] text-[32px] font-bold mt-2 text-black'>Premier Fire & Rescue System Services</p>
+        <p className='sm:text-[40px] text-[28px] font-bold mt-2 text-black text-center'>Premier Fire & Rescue System Services</p>
         <p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam laboriosam molestias aperiam. Quisquam tempore doloremque magnam animi voluptatem officiis corrupti nihil, tempora impedit inventore dignissimos unde eum quae </p>
         <ul class="list-disc">
             <li>
