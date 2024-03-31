@@ -11,7 +11,7 @@ function App() {
     <Navbar/>
     <Routes>
     <Route path="/" element={<Home/>} />
-    <Route path="upload" element={<Upload/>} />
+    <Route path="/upload" element={<Upload/>} />
     </Routes>
     <Footer/>
     </BrowserRouter>
