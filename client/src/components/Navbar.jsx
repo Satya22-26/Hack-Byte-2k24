@@ -14,11 +14,10 @@ function Navbar() {
         <div>
           <div className='flex gap-8 items-center'>
             <div className='md:flex gap-8 items-center hidden'>
-              <a href="">Home</a>
+              <a href="/">Home</a>
               <a href="">About Us</a>
               <a href="">Services</a>
-              <a href="">Login</a>
-              <a href="">Sign Up</a>
+              <a href="/upload">Upload</a>
             </div>
             <button className='bg-primary px-2 py-1 md:hidden' onClick={() => setMenuOpen(!menuOpen)}>☰</button>
           </div>
@@ -35,7 +34,7 @@ function Navbar() {
           </div>
           <div className='flex flex-col text-white items-start gap-4'>
             <div>
-              <a href="">Home</a>
+              <a href="/">Home</a>
               <hr className="absolute left-[21vw] right-[1vw] border-white  my-2" />
             </div>
             <div>
@@ -47,11 +46,7 @@ function Navbar() {
               <hr className="absolute left-[21vw] right-[1vw] border-white  my-2" />
             </div>
             <div>
-              <a href="">Login</a>
-              <hr className="absolute left-[21vw] right-[1vw] border-white  my-2" />
-            </div>
-            <div>
-              <a href="">Sign Up</a>
+              <a href="/upload">Upload</a>
               <hr className="absolute left-[21vw] right-[1vw] border-white  my-2" />
             </div>
           </div>

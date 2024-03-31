@@ -1,23 +1,20 @@
 import './App.css'
 import Navbar from './components/Navbar'
-import Section1 from './sections/Section1'
-import Services from './sections/Services'
-import About from './sections/About'
 import { Footer } from './components/Footer'
-import Gallery from './sections/Gallery'
-import Team from './sections/Team'
+import Home from './Pages/Home'
+import {BrowserRouter, Route, Routes} from "react-router-dom";
+import Upload from './Pages/Upload';
 function App() {
 
   return (
-    <>
+    <BrowserRouter>
     <Navbar/>
-    <Section1/>
-    <About/>
-    <Services/>
-    <Gallery/>
-    <Team/>
+    <Routes>
+    <Route path="/" element={<Home/>} />
+    <Route path="upload" element={<Upload/>} />
+    </Routes>
     <Footer/>
-    </>
+    </BrowserRouter>
   )
 }
 

@@ -36,7 +36,7 @@ const Gallery = () => {
             <img
               alt="gallery"
               className="block h-full w-full rounded-lg object-cover object-center"
-              src={gal3}
+              src={gal5}
             />
           </div>
         </div>
@@ -52,7 +52,7 @@ const Gallery = () => {
             <img
               alt="gallery"
               className="block h-full w-full rounded-lg object-cover object-center"
-              src={gal5}
+              src={gal3}
             />
           </div>
           <div className="w-1/2 p-1 md:p-2">
