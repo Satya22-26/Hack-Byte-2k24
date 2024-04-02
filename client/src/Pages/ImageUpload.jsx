@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-function Dehaze() {
+function ImageUpload() {
   const [file, setFile] = useState(null);
   const [dehazedImagePath, setDehazedImagePath] = useState(null);
 
@@ -60,4 +60,4 @@ function Dehaze() {
   );
 }
 
-export default Dehaze;
+export default ImageUpload;
