@@ -4,89 +4,12 @@ from werkzeug.utils import secure_filename
 import cv2
 import numpy as np
 import base64
+from model.dehaze import dehaze
+from model.image import dehaze_image
 
 app = Flask(__name__)
 CORS(app, resources={r"*":{"origins":"*"}})
 
-def dark_channel(img, size=15):
-    r, g, b = cv2.split(img)
-    min_img = cv2.min(r, cv2.min(g, b))
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (size, size))
-    dc_img = cv2.erode(min_img, kernel)
-    return dc_img
-
-def get_atmo(img, percent=0.001):
-    mean_perpix = np.mean(img, axis=2).reshape(-1)
-    mean_topper = mean_perpix[:int(img.shape[0] * img.shape[1] * percent)]
-    return np.mean(mean_topper)
-
-def get_trans(img, atom, w=0.95):
-    x = img / atom
-    t = 1 - w * dark_channel(x, 15)
-    return t
-
-def guided_filter(p, i, r, e):
-    mean_I = cv2.boxFilter(i, cv2.CV_64F, (r, r))
-    mean_p = cv2.boxFilter(p, cv2.CV_64F, (r, r))
-    corr_I = cv2.boxFilter(i * i, cv2.CV_64F, (r, r))
-    corr_Ip = cv2.boxFilter(i * p, cv2.CV_64F, (r, r))
-    var_I = corr_I - mean_I * mean_I
-    cov_Ip = corr_Ip - mean_I * mean_p
-    a = cov_Ip / (var_I + e)
-    b = mean_p - a * mean_I
-    mean_a = cv2.boxFilter(a, cv2.CV_64F, (r, r))
-    mean_b = cv2.boxFilter(b, cv2.CV_64F, (r, r))
-    q = mean_a * i + mean_b
-    return q
-
-def dehaze_image(file_path):
-    try:
-        im = cv2.imread(file_path)
-        img = im.astype('float64') / 255
-        img_gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY).astype('float64') / 255
-        atom = get_atmo(img)
-        trans = get_trans(img, atom)
-        trans_guided = guided_filter(trans, img_gray, 20, 0.0001)
-        trans_guided = cv2.max(trans_guided, 0.25)
-        result = np.empty_like(img)
-        for i in range(3):
-            result[:, :, i] = (img[:, :, i] - atom) / trans_guided + atom
-        return result
-    except Exception as e:
-        print(f"Error processing image: {e}")
-        return None
-    
-def dehaze(frame, omega=0.95, tmin=0.1, gamma=1.0, color_balance=None):
-    # Step 1: Calculate the dark channel
-    min_channel = np.min(frame, axis=2)
-    dark_channel = cv2.erode(min_channel, np.ones((15, 15), np.uint8))
-    
-    # Step 2: Estimate the atmospheric light
-    num_pixels = dark_channel.size
-    num_top_pixels = int(num_pixels * omega)
-    flat_dark_channel = dark_channel.flatten()
-    indices = np.argpartition(flat_dark_channel, -num_top_pixels)[-num_top_pixels:]
-    atmospheric_light = np.mean(frame.reshape(-1, 3)[indices], axis=0) * 0.8  # Use a fraction of the mean
-    
-    # Step 3: Calculate the transmission map
-    transmission = 1 - omega * min_channel / atmospheric_light.max()
-    transmission[transmission < tmin] = tmin
-    
-    # Step 4: Recover the haze-free image
-    recovered_image = np.zeros_like(frame, dtype=np.float32)
-    for i in range(3):
-        recovered_image[:, :, i] = ((frame[:, :, i].astype(np.float32) - atmospheric_light[i]) /
-                                    transmission + atmospheric_light[i])
-    
-    # Gamma correction
-    recovered_image = np.clip(recovered_image, 0, 255).astype(np.uint8)
-    recovered_image = np.power(recovered_image / 255.0, 1 / gamma) * 255.0
-    
-    # Color balance
-    if color_balance is not None:
-        recovered_image = cv2.xphoto.createSimpleWB().balanceWhite(recovered_image.astype(np.uint8))  # Convert to compatible data type
-    
-    return recovered_image
 
 def generate_frames():
     cap = cv2.VideoCapture(0)
