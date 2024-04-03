@@ -2,6 +2,7 @@ from flask import Flask, request, send_file,  Response, jsonify
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import cv2
+import os
 import numpy as np
 import base64
 from model.dehaze import dehaze
@@ -10,6 +11,8 @@ from model.image import dehaze_image
 app = Flask(__name__)
 CORS(app, resources={r"*":{"origins":"*"}})
 
+UPLOAD_FOLDER = 'uploadvideo'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def generate_frames():
     cap = cv2.VideoCapture(0)
@@ -28,6 +31,30 @@ def generate_frames():
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
     cap.release()
+
+# Function to process video and save the processed video
+def process_video(input_video_path, output_video_path):
+    cap = cv2.VideoCapture(input_video_path)
+    frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    fps = int(cap.get(cv2.CAP_PROP_FPS))
+
+    out = cv2.VideoWriter(output_video_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (frame_width, frame_height))
+
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        # Apply dehaze to each frame
+        dehazed_frame = dehaze(frame, omega=0.5, tmin=0.05, gamma=1.5, color_balance=True)
+        out.write(dehazed_frame)
+
+    cap.release()
+    out.release()
+
+    return "Video processing complete"
+
 
 @app.route('/video_feed')
 def video_feed():
@@ -76,6 +103,32 @@ def download_file(filename):
         return send_file(f"uploads/{filename}", as_attachment=True)
     except Exception as e:
         return {"error": str(e)}
+    
+# Route to upload and process video
+@app.route('/uploadvideo', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'})
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'})
+
+    filename = file.filename
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    file.save(file_path)
+
+    # Process the uploaded video
+    output_video_path = os.path.join(app.config['UPLOAD_FOLDER'], 'output.mp4')
+    process_video(file_path, output_video_path)
+
+    return jsonify({'message': 'File uploaded and processed successfully', 'filename': 'output.mp4', 'processed_video_path': output_video_path})
+
+# Route to serve processed video
+@app.route('/processedvideo')
+def processed_video():
+    processed_video_path = request.args.get('path')
+    return send_file(processed_video_path, mimetype='video/mp4')
 
 if __name__ == "__main__":
     app.run(debug=True)
