@@ -6,6 +6,7 @@ import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Upload from './Pages/Upload';
 import ImageUpload from './Pages/ImageUpload';
 import RealTimeDehaze from './Pages/RealTimeDehaze';
+import Video from './Pages/Video';
 function App() {
 
   return (
@@ -16,6 +17,7 @@ function App() {
     <Route path="/upload" element={<Upload/>} />
     <Route path="/image-upload" element={<ImageUpload/>} />
     <Route path='/real-time' element={<RealTimeDehaze/>}/>
+    <Route path='/video-upload' element={<Video/>}/>
     </Routes>
     <Footer/>
     </BrowserRouter>

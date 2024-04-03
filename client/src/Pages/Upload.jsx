@@ -26,10 +26,12 @@ function Upload() {
                 
               </div>
               <div class="mt-3 rounded-md shadow sm:mt-0 sm:ml-3">
-                <label htmlFor="video-upload" class="flex items-center justify-center w-full px-8 py-3 text-base font-medium leading-6 text-primary transition duration-150 ease-in-out bg-white border border-transparent rounded-md cursor-pointer  focus:outline-none focus:shadow-outline-blue md:py-4 md:text-lg md:px-10">
+              <Link to="/video-upload">
+              <label htmlFor="video-upload" class="flex items-center justify-center w-full px-8 py-3 text-base font-medium leading-6 text-primary transition duration-150 ease-in-out bg-white border border-transparent rounded-md cursor-pointer  focus:outline-none focus:shadow-outline-blue md:py-4 md:text-lg md:px-10">
                   Upload Videos
                   <input id="video-upload" name="video-upload" type="file" className="hidden" accept="video/*" />
                 </label>
+              </Link>
               </div>
             </div>
           </div>
