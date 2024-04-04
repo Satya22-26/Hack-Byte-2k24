@@ -5,6 +5,7 @@ import cv2
 import os
 import numpy as np
 import base64
+import time
 from model.dehaze import dehaze
 from model.image import dehaze_image
 
@@ -33,28 +34,36 @@ def generate_frames():
     cap.release()
 
 # Function to process video and save the processed video
-def process_video(input_video_path, output_video_path):
+def process_video(input_video_path, output_video_path, target_resolution=(640, 480)):
+    start_time = time.time()
     cap = cv2.VideoCapture(input_video_path)
     frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = int(cap.get(cv2.CAP_PROP_FPS))
 
-    out = cv2.VideoWriter(output_video_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (frame_width, frame_height))
+    out = cv2.VideoWriter(output_video_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, target_resolution)
 
     while True:
+        print("Processing")
         ret, frame = cap.read()
         if not ret:
             break
 
-        # Apply dehaze to each frame
-        dehazed_frame = dehaze(frame, omega=0.5, tmin=0.05, gamma=1.5, color_balance=True)
+        # Resize the frame to the target resolution
+        resized_frame = cv2.resize(frame, target_resolution)
+
+        # Apply dehaze to the resized frame
+        dehazed_frame = dehaze(resized_frame, omega=0.5, tmin=0.05, gamma=1.5, color_balance=True)
         out.write(dehazed_frame)
 
     cap.release()
     out.release()
 
-    return "Video processing complete"
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"Video processing complete. Time taken: {elapsed_time:.2f} seconds")
 
+    return "Video processing complete"
 
 @app.route('/video_feed')
 def video_feed():
@@ -117,16 +126,18 @@ def upload_file():
     filename = file.filename
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(file_path)
+    print("Upload done")
 
     # Process the uploaded video
     output_video_path = os.path.join(app.config['UPLOAD_FOLDER'], 'output.mp4')
     process_video(file_path, output_video_path)
-
+    print("Processing done")
     return jsonify({'message': 'File uploaded and processed successfully', 'filename': 'output.mp4', 'processed_video_path': output_video_path})
 
 # Route to serve processed video
 @app.route('/processedvideo')
 def processed_video():
+    print("video send")
     processed_video_path = request.args.get('path')
     return send_file(processed_video_path, mimetype='video/mp4')
 
