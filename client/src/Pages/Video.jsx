@@ -13,7 +13,7 @@ function Video() {
     const formData = new FormData();
     formData.append('file', selectedFile);
 
-    axios.post('http://localhost:5000/uploadvideo', formData)
+    axios.post('http://127.0.0.1:5000/uploadvideo', formData)
       .then(response => {
         console.log('Upload successful:', response.data);
         setProcessedVideoPath(response.data.processed_video_path);
