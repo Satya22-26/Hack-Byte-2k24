@@ -5,7 +5,6 @@ import cv2
 import os
 import numpy as np
 import base64
-import time
 from model.dehaze import dehaze
 from model.image import dehaze_image
 from model.video import process_video
@@ -110,6 +109,40 @@ def processed_video():
     print("video send")
     processed_video_path = request.args.get('path')
     return send_file(processed_video_path, mimetype='video/mp4')
+
+# Initial location data
+location_data = {
+    'chat_id': None,
+    'latitude': None,
+    'longitude': None
+}
+
+@app.route('/api/location_data', methods=['GET', 'POST'])
+def location_data_handler():
+    global location_data  # Access the global variable
+
+    if request.method == 'GET':
+        return jsonify(location_data)
+    elif request.method == 'POST':
+        try:
+            data = request.get_json()
+            chat_id = data['chat_id']
+            latitude = data['latitude']
+            longitude = data['longitude']
+
+            # Update location_data with new data
+            location_data['chat_id'] = chat_id
+            location_data['latitude'] = latitude
+            location_data['longitude'] = longitude
+
+            # Here you can further process the received location data
+            print(f'{latitude} , {longitude}')
+
+            response_message = f"Received location alert for chat ID {chat_id}: Latitude {latitude}, Longitude {longitude}"
+            return jsonify({'message': response_message}), 200
+        except Exception as e:
+            error_message = f"Error processing location alert: {str(e)}"
+            return jsonify({'error': error_message}), 400
 
 if __name__ == "__main__":
     app.run(debug=True)
