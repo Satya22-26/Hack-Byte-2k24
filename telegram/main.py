@@ -3,6 +3,8 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 from dotenv import load_dotenv
 import os
+import requests
+
 
 load_dotenv()  
 BOT_USERNAME: Final = '@firbrig_bot'
@@ -23,8 +25,29 @@ async def custom_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def handle_location(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_location = update.message.location
     print(f'User ({update.message.chat.id}) sent a location: latitude {user_location.latitude}, longitude {user_location.longitude}')
-    # Here you can add code to process the location, e.g., save it, respond based on location, etc.
-    await update.message.reply_text(f"Received your location! (Latitude: {user_location.latitude}, Longitude: {user_location.longitude})")
+    
+    # Your website's API endpoint for receiving location alerts
+    api_url = 'http://127.0.0.1:5000/api/location_data'
+    
+    # Payload to send (you might need to adjust this according to your API's requirements)
+    payload = {
+        'chat_id': update.message.chat.id,
+        'latitude': user_location.latitude,
+        'longitude': user_location.longitude
+    }
+    
+    try:
+        # Send a POST request to your website's API with adjusted timeout
+        response = requests.post(api_url, json=payload, timeout=10)  # Adjust timeout value as needed
+        response.raise_for_status()  # This will raise an exception for HTTP errors
+        
+        # You can log or process the response if you wish
+        print('Location sent to website successfully:', response.json())
+        
+        await update.message.reply_text(f"Received your location and alerted the website! (Latitude: {user_location.latitude}, Longitude: {user_location.longitude})")
+    except requests.exceptions.RequestException as e:
+        print('Failed to send location to website:', e)
+        await update.message.reply_text("Received your location, but couldn't alert the website.")
 
 # Responses to text
 def handle_response(text: str) -> str:
