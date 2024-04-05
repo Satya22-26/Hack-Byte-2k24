@@ -20,12 +20,11 @@ function Video() {
       })
       .catch(error => {
         console.error('Upload failed:', error.message);
-        // Display error message
       });
   };
 
   const downloadProcessedVideo = () => {
-    axios.get(`http://localhost:5000/processedvideo?path=${processedVideoPath}`, { responseType: 'blob' })
+    axios.get(`http://127.0.0.1:5000/processedvideo?path=${processedVideoPath}`, { responseType: 'blob' })
       .then(response => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');

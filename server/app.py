@@ -41,21 +41,17 @@ def video_feed():
 @app.route('/api/process_frame', methods=['POST'])
 def process_frame():
     data = request.get_json()
-    image_data = data['image_data'].split(',')[1]  # Remove the "data:image/jpeg;base64," prefix
+    image_data = data['image_data'].split(',')[1] 
     nparr = np.frombuffer(base64.b64decode(image_data), np.uint8)
     frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-    # Perform dehazing on the frame
     dehazed_frame = dehaze(frame, omega=0.5, tmin=0.1, gamma=1.5, color_balance=True)
 
-    # Encode the dehazed frame to base64 for sending to the client
     _, buffer = cv2.imencode('.jpg', dehazed_frame)
     dehazed_image_data = base64.b64encode(buffer).decode('utf-8')
 
     return jsonify({'dehazed_image': dehazed_image_data})
 
-
-@app.route("/dehaze/", methods=["POST"])
 @app.route("/dehaze/", methods=["POST"])
 def dehaze_endpoint():
     try:
@@ -67,8 +63,10 @@ def dehaze_endpoint():
             if dehazed_image is not None:
                 output_file_path = f"uploads/dehazed_{filename}"
                 cv2.imwrite(output_file_path, dehazed_image * 255)
+                os.remove(f"uploads/{filename}")  # Delete uploaded image
                 return send_file(output_file_path, as_attachment=True)
             else:
+                os.remove(f"uploads/{filename}")  # Delete uploaded image if processing failed
                 return {"error": "Failed to process image"}
         else:
             return {"error": "No file provided"}
@@ -82,7 +80,6 @@ def download_file(filename):
     except Exception as e:
         return {"error": str(e)}
     
-# Route to upload and process video
 @app.route('/uploadvideo', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
@@ -97,20 +94,17 @@ def upload_file():
     file.save(file_path)
     print("Upload done")
 
-    # Process the uploaded video
     output_video_path = os.path.join(app.config['UPLOAD_FOLDER'], 'output.mp4')
     process_video(file_path, output_video_path)
     print("Processing done")
     return jsonify({'message': 'File uploaded and processed successfully', 'filename': 'output.mp4', 'processed_video_path': output_video_path})
 
-# Route to serve processed video
 @app.route('/processedvideo')
 def processed_video():
     print("video send")
     processed_video_path = request.args.get('path')
     return send_file(processed_video_path, mimetype='video/mp4')
 
-# Initial location data
 location_data = {
     'chat_id': None,
     'latitude': None,
@@ -119,7 +113,7 @@ location_data = {
 
 @app.route('/api/location_data', methods=['GET', 'POST'])
 def location_data_handler():
-    global location_data  # Access the global variable
+    global location_data 
 
     if request.method == 'GET':
         return jsonify(location_data)
@@ -130,12 +124,10 @@ def location_data_handler():
             latitude = data['latitude']
             longitude = data['longitude']
 
-            # Update location_data with new data
             location_data['chat_id'] = chat_id
             location_data['latitude'] = latitude
             location_data['longitude'] = longitude
 
-            # Here you can further process the received location data
             print(f'{latitude} , {longitude}')
 
             response_message = f"Received location alert for chat ID {chat_id}: Latitude {latitude}, Longitude {longitude}"
