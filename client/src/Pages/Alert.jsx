@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import DynamicGoogleMap from '../components/Map';
 
 const LocationData = () => {
   const [locationData, setLocationData] = useState(null);
@@ -17,7 +18,7 @@ const LocationData = () => {
     };
 
     fetchLocationData();
-  }, []);
+  }, [locationData]);
 
   return (
     <div>
@@ -26,11 +27,10 @@ const LocationData = () => {
         <p>Loading...</p>
       ) : (
         locationData && (
-          <div>
-            <p>Chat ID: {locationData.chat_id}</p>
-            <p>Latitude: {locationData.latitude}</p>
-            <p>Longitude: {locationData.longitude}</p>
-          </div>
+          <DynamicGoogleMap
+          latitude = {locationData.latitude}
+          longitude = {locationData.longitude}
+          />
         )
       )}
     </div>
