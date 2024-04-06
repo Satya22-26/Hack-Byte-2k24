@@ -8,6 +8,7 @@ import ImageUpload from './Pages/ImageUpload';
 import RealTimeDehaze from './Pages/RealTimeDehaze';
 import Video from './Pages/Video';
 import Alert from './Pages/Alert'
+import DynamicGoogleMap from './components/Map';
 function App() {
 
   return (
@@ -20,6 +21,7 @@ function App() {
     <Route path='/real-time' element={<RealTimeDehaze/>}/>
     <Route path='/video-upload' element={<Video/>}/>
     <Route path='/alert' element={<Alert/>}/>
+    <Route path='/map' element={<DynamicGoogleMap/>}/>
     </Routes>
     <Footer/>
     </BrowserRouter>

@@ -21,15 +21,12 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def custom_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text('Custom command response')
 
-# Handle location input
 async def handle_location(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_location = update.message.location
     print(f'User ({update.message.chat.id}) sent a location: latitude {user_location.latitude}, longitude {user_location.longitude}')
     
-    # Your website's API endpoint for receiving location alerts
     api_url = 'http://127.0.0.1:5000/api/location_data'
     
-    # Payload to send (you might need to adjust this according to your API's requirements)
     payload = {
         'chat_id': update.message.chat.id,
         'latitude': user_location.latitude,
@@ -37,11 +34,10 @@ async def handle_location(update: Update, context: ContextTypes.DEFAULT_TYPE):
     }
     
     try:
-        # Send a POST request to your website's API with adjusted timeout
-        response = requests.post(api_url, json=payload, timeout=10)  # Adjust timeout value as needed
-        response.raise_for_status()  # This will raise an exception for HTTP errors
+       
+        response = requests.post(api_url, json=payload, timeout=10)  
+        response.raise_for_status()  
         
-        # You can log or process the response if you wish
         print('Location sent to website successfully:', response.json())
         
         await update.message.reply_text(f"Received your location and alerted the website! (Latitude: {user_location.latitude}, Longitude: {user_location.longitude})")
@@ -93,10 +89,8 @@ def start_bot():
     app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_message))
     app.add_handler(MessageHandler(filters.LOCATION, handle_location))  # Location handler
 
-    # Error Handler
     app.add_error_handler(error)
 
-    # Start polling
     print('Polling...')
     app.run_polling(poll_interval=3)
 
